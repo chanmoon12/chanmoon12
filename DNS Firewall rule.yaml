@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Temporary Working Stack
+Resources:
+  ResolverFirewallDomainList1:
+    Type: 'AWS::Route53Resolver::FirewallDomainList'
+    Properties:
+      Name: allowed-domain-list
+      Domains:
+        - google.com.
+        - yahoo.com
+        - cisco.com
+  ResolverFirewallDomainList2:
+    Type: 'AWS::Route53Resolver::FirewallDomainList'
+    Properties:
+      Name: Blocked-domain-list
+      Domains:
+        - eBay.com
+        - bestbuy.com
+        - Washingtonpost.com
+  ResolverFirewallRuleGroup:
+    Type: 'AWS::Route53Resolver::FirewallRuleGroup'
+    Properties:
+      Name: dns-firewall-rulegroup
+      FirewallRules:
+        - Priority: 1
+          Action: ALLOW
+          FirewallDomainListId:
+            Ref: ResolverFirewallDomainList1
+        - Priority: 2
+          Action: BLOCK
+          FirewallDomainListId:
+            Ref: ResolverFirewallDomainList2
+          BlockResponse: NXDOMAIN
+  ResolverFirewallAssociation:
+    Type: 'AWS::Route53Resolver::FirewallRuleGroupAssociation'
+    Properties:
+      VpcId: vpc-02668fc1b94260b9c
+      FirewallRuleGroupId:
+        Ref: ResolverFirewallRuleGroup
+      Name: Route53 resolver Associate with VPC
+      MutationProtection: DISABLED
+      Priority: 101
+Parameters: {}
+Metadata: {}
+Conditions: {}
